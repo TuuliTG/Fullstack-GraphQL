@@ -1,0 +1,15 @@
+{
+  "name": "fullstack-graphql",
+  "version": "1.0.0",
+  "description": "Fullstack graphQL",
+  "main": "library-backend.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Tuuli Toivanen-Gripentrog",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.9.1",
+    "graphql": "^16.7.1"
+  }
+}
