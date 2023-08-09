@@ -17,7 +17,7 @@ const App = () => {
   if (result.loading) {
     return <div>loading...</div>
   }
-
+  console.log("result", result.data)
   const notify = (message) => {
     setErrorMessage(message)
     setTimeout(() => {
@@ -38,7 +38,7 @@ const App = () => {
 
       <Books show={page === 'books'} books={result.data.allBooks}/>
 
-      <NewBook show={page === 'add'} setError={setErrorMessage}/>
+      <NewBook show={page === 'add'} setError={notify}/>
     </div>
   )
 }
