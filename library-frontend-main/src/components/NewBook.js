@@ -4,9 +4,9 @@ import { CREATE_BOOK } from '../queries'
 
 
 const NewBook = (props) => {
-  const [title, setTitle] = useState(null)
-  const [author, setAuthor] = useState(null)
-  const [published, setPublished] = useState(null)
+  const [title, setTitle] = useState("")
+  const [author, setAuthor] = useState("")
+  const [published, setPublished] = useState("")
   const [genre, setGenre] = useState('')
   const [genres, setGenres] = useState([])
 

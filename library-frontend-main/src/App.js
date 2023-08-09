@@ -22,7 +22,7 @@ const App = () => {
     setErrorMessage(message)
     setTimeout(() => {
       setErrorMessage(null)
-    }, 10000)
+    }, 1000)
   }
 
   return (
