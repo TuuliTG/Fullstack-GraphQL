@@ -1,6 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
+const { GraphQLError } = require('graphql')
 
 let authors = [
   {
@@ -189,16 +189,48 @@ const resolvers = {
     addBook: async (root, args) => {
       let author = await Author.findOne({ name: args.author })
       if (!author) {
-        author = new Author({ name: args.author })
-        await author.save()
+        try {
+          author = new Author({ name: args.author })
+          await author.save()
+        } catch (error) {
+          throw new GraphQLError('Saving a new author failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error
+            }
+          })
+        }
+        let book
+        try {
+          book = new Book({ ...args, author: author })
+          await book.save()
+        } catch (error) {
+          throw new GraphQLError('Adding a book failed', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.title,
+              error
+            }
+          })
+        }
+        return book
       }
-      const book = new Book({ ...args, author: author })
-      return book.save()
     },
     editAuthor: async (root, args) => {
       const author = await Author.findOne({ name:args.name })
       author.born = args.setBornTo
-      return author.save()
+      try {
+        return author.save()
+      } catch (error) {
+        throw new GraphQLError('Editing author failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.setBornTo,
+            error
+          }
+        })
+      }
     }
   }
 }
