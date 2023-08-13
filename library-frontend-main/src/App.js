@@ -34,30 +34,29 @@ const App = () => {
     client.resetStore()
   }
 
-  if (!token) {
-    return (
-      <>
-        <Notify errorMessage={errorMessage} />
-        <LoginForm setToken={setToken} setError={notify} />
-      </>
-    )
-  }
-
   return (
     <div>
       <Notify errorMessage={errorMessage} />
-      <button onClick={logout}>logout</button>
+      {token ?
+        <button onClick={logout}>logout</button>
+        :
+        <div>
+          <button onClick={() => setPage('login')}>Login</button>
+          
+        </div>
+      }
+    
       <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
+        {token && <button onClick={() => setPage('add')}>add book</button>}
       </div>
 
-      <Authors show={page === 'authors'} authors={result.data.allAuthors} setError={setErrorMessage}/>
-
+      <Authors show={page === 'authors'} authors={result.data.allAuthors} setError={setErrorMessage} token={token}/>
       <Books show={page === 'books'} books={result.data.allBooks}/>
-
       <NewBook show={page === 'add'} setError={notify}/>
+      <LoginForm show={page === 'login'} setToken={setToken} setError={setErrorMessage} setPage={setPage}/>    
+      
     </div>
   )
 }
