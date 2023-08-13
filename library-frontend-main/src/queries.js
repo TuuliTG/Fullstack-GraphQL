@@ -3,9 +3,11 @@ import { gql } from '@apollo/client'
 export const ALL_BOOKS_AND_AUTHORS = gql`
 query {
   allBooks {
+    author {
+      name
+    }
     title
     published
-    author
   }
   allAuthors {
     name
@@ -41,4 +43,11 @@ mutation editAuthor(
     born
   }
 }
+`
+export const LOGIN = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password)  {
+      value
+    }
+  }
 `
