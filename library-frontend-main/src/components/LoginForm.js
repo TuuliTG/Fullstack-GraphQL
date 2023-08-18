@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@apollo/client'
-import { LOGIN } from '../queries'
+import { GETCURRENTUSER, LOGIN } from '../queries'
 
 const LoginForm = ( props ) => {
   
@@ -12,10 +12,10 @@ const LoginForm = ( props ) => {
   const [ login, result ] = useMutation(LOGIN, {
     onError: (error) => {
       props.setError(error.graphQLErrors[0].message)
-    }
+    },
+    //refetchQueries: [  {query: GETCURRENTUSER, fetchPolicy: 'no-cache'} ],
   })
   
-
   useEffect(() => {
     if ( result.data ) {
       const token = result.data.login.value

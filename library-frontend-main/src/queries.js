@@ -17,6 +17,19 @@ query {
 }
 `
 
+export const BOOKS_BY_GENRE = gql`
+  query allBooks($genre: String) {
+    allBooks(genre: $genre) {
+      title
+      published
+      author {
+        name
+      }
+    }
+  }
+`
+
+
 export const CREATE_BOOK = gql`
 mutation addBook(
   $title: String!,
@@ -53,3 +66,14 @@ export const LOGIN = gql`
     }
   }
 `
+
+export const GETCURRENTUSER = gql`
+  query {
+    me {
+      username
+      favoriteGenre
+      id
+    }
+  }
+`
+
