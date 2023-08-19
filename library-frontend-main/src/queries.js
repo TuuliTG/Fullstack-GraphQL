@@ -8,6 +8,7 @@ query {
     }
     title
     published
+    genres
   }
   allAuthors {
     name

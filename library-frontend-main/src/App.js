@@ -12,6 +12,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [user, setUser] = useState(null)
   const [page, setPage] = useState('authors')
+  const [genre, setGenre] = useState(null)
 
   const client = useApolloClient()
 
@@ -25,6 +26,7 @@ const App = () => {
   useEffect(() => {
     if ( currentUser.data ) {
       setUser(currentUser.data.me)
+      setGenre(currentUser.data.me.favoriteGenre)
     }
   }) // eslint-disable-line
   console.log('current user', user)
@@ -76,7 +78,10 @@ const App = () => {
         show={page === 'books' || page === 'recommendations'} 
         recommended = {page === 'recommendations'}
         currentUser = {user}
-        books= {page === 'recommendations' ? null : result.data.allBooks}/>
+        books= {page === 'recommendations' ? null : result.data.allBooks}
+        setGenre={setGenre} 
+        genre={genre}
+      />
       <NewBook show={page === 'add'} setError={notify}/>
       <LoginForm show={page === 'login'} setToken={setToken} setError={setErrorMessage} setPage={setPage}/>    
       
