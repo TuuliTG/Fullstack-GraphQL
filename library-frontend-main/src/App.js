@@ -27,7 +27,6 @@ const App = () => {
   useEffect(() => {
     if ( data !== undefined && data.me !== null ) {
       setUser(data.me)
-      setGenre(data.me.favoriteGenre)
     } else {
       setUser(null)
     }
@@ -36,7 +35,7 @@ const App = () => {
   useEffect(() => {
     if (page !== 'recommendations'){
       setShowByGenre(false)
-    }
+    } 
   }, [page])
   
   if (result.loading) {
@@ -60,6 +59,7 @@ const App = () => {
   }
 
   const handleRecommendedPage = () => {
+    setGenre(data.me.favoriteGenre)
     setPage('recommendations')
     setShowByGenre(true)
   }

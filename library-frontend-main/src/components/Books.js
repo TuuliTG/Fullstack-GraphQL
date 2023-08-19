@@ -16,12 +16,18 @@ const getGenres = (books) => {
 }
 
 const Books = (props) => {
-  const { loading, error, data, refetch } = useQuery(BOOKS_BY_GENRE,
+  const recommendedBooks = useQuery(BOOKS_BY_GENRE,
     { 
-      skip: !props.genre, variables: { genre: props.currentUser?.favoriteGenre } 
+      skip: props.recommended === false, variables: { genre: props.currentUser?.favoriteGenre },
     }
   )
 
+  const { loading, error, data, refetch } = useQuery(BOOKS_BY_GENRE,
+    { 
+      skip: !props.genre, variables: { genre: props.currentUser?.favoriteGenre },
+    }
+  )
+  
   if (loading) return <div>Loading...</div>;
   if (error) return `Error! ${error}`;
 
@@ -31,32 +37,32 @@ const Books = (props) => {
   
   const genres = !props.recommended ? getGenres(props.books) : []
 
-  let books = props.showByGenre ? data.allBooks : props.books
+  let books = props.recommended ? recommendedBooks.data.allBooks : props.showByGenre ? data.allBooks : props.books
   
   const changeGenre = (genre) => {
     props.setGenre(genre)
     props.setShowByGenre(true)
     refetch({genre: genre})
   }
-
   return (
     <div>
       {props.recommended ? 
         <div>
           <h2>Recommended books</h2>
-          <div>
-            Books in you recommended genre <b>{props.currentUser.favoriteGenre}</b>
-          </div>
+          <h3>Books in you recommended genre <b>{props.currentUser.favoriteGenre}</b></h3>
         </div>
         : 
         <div>
           <h2>Books</h2> 
           {genres.map((genre, index) => (
             <div key={index}>
-              <button key={index} onClick = { () => changeGenre(genre)}>{genre}</button>
+              <button key={index} onClick = {() => changeGenre(genre)}>{genre}</button>
             </div>
           ))}
+          <button onClick ={() => props.setShowByGenre(false)}>All genres</button>
+          {props.showByGenre ? <h3>Books in genre <b>{props.genre}</b></h3> : <h3>Showing books in all genres</h3>}
         </div>
+        
       }
     <BookList books={books}/>
   </div>
