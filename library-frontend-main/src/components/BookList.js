@@ -7,12 +7,14 @@ const BookList = (props) => {
             <th></th>
             <th>author</th>
             <th>published</th>
+            <th>Genres</th>
           </tr>
           {props.books.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
               <td>{a.published}</td>
+              <td>{a.genre}</td>
             </tr>
           ))}
         </tbody>

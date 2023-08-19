@@ -13,6 +13,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [page, setPage] = useState('authors')
   const [genre, setGenre] = useState(null)
+  const [showByGenre, setShowByGenre] = useState(false)
 
   const client = useApolloClient()
 
@@ -20,22 +21,28 @@ const App = () => {
     pollInterval: 2000
   })
 
-  const currentUser = useQuery(GETCURRENTUSER, {
+  const {data, refetch} = useQuery(GETCURRENTUSER, {
     fetchPolicy: 'no-cache'
   })
   useEffect(() => {
-    if ( currentUser.data ) {
-      setUser(currentUser.data.me)
-      setGenre(currentUser.data.me.favoriteGenre)
+    if ( data !== undefined && data.me !== null ) {
+      setUser(data.me)
+      setGenre(data.me.favoriteGenre)
+    } else {
+      setUser(null)
     }
   }) // eslint-disable-line
-  console.log('current user', user)
+
+  useEffect(() => {
+    if (page !== 'recommendations'){
+      setShowByGenre(false)
+    }
+  }, [page])
   
-  
-    if (result.loading) {
+  if (result.loading) {
     return <div>loading...</div>
   }
-  //console.log("result", result.data)
+
   const notify = (message) => {
     setErrorMessage(message)
     setTimeout(() => {
@@ -44,10 +51,17 @@ const App = () => {
   }
 
   const logout = () => {
-    setPage('authors')
     setToken(null)
+    setUser(null)
+    setShowByGenre(false)
     localStorage.clear()
     client.resetStore()
+    setPage('authors')
+  }
+
+  const handleRecommendedPage = () => {
+    setPage('recommendations')
+    setShowByGenre(true)
   }
 
   return (
@@ -68,7 +82,7 @@ const App = () => {
         {user && 
           <>
             <button onClick={() => setPage('add')}>add book</button>
-            <button onClick={() => setPage('recommendations')}>Recommended</button>
+            <button onClick={handleRecommendedPage} >Recommended</button>
           </>
         }
       </div>
@@ -81,9 +95,11 @@ const App = () => {
         books= {page === 'recommendations' ? null : result.data.allBooks}
         setGenre={setGenre} 
         genre={genre}
+        showByGenre={showByGenre}
+        setShowByGenre={setShowByGenre}
       />
       <NewBook show={page === 'add'} setError={notify}/>
-      <LoginForm show={page === 'login'} setToken={setToken} setError={setErrorMessage} setPage={setPage}/>    
+      <LoginForm show={page === 'login'} setToken={setToken} setError={setErrorMessage} setPage={setPage} refetch={refetch}/>    
       
     </div>
   )

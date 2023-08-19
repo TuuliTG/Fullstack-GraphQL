@@ -23,6 +23,7 @@ export const BOOKS_BY_GENRE = gql`
     allBooks(genre: $genre) {
       title
       published
+      genres
       author {
         name
       }

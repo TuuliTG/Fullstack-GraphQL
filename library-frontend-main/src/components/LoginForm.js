@@ -13,7 +13,7 @@ const LoginForm = ( props ) => {
     onError: (error) => {
       props.setError(error.graphQLErrors[0].message)
     },
-    //refetchQueries: [  {query: GETCURRENTUSER, fetchPolicy: 'no-cache'} ],
+    // refetchQueries: [  {query: GETCURRENTUSER, fetchPolicy: 'no-cache'} ],
   })
   
   useEffect(() => {
@@ -21,6 +21,7 @@ const LoginForm = ( props ) => {
       const token = result.data.login.value
       props.setToken(token)
       localStorage.setItem('books-and-authors-user-token', token)
+      props.refetch()
     }
   }, [result.data]) // eslint-disable-line
 
