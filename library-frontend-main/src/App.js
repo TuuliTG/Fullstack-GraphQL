@@ -3,8 +3,25 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
-import { ALL_BOOKS_AND_AUTHORS, GETCURRENTUSER, BOOK_ADDED } from './queries'
+import { ALL_BOOKS_AND_AUTHORS, GETCURRENTUSER, BOOK_ADDED, ALL_BOOKS, ALL_AUTHORS } from './queries'
 import { useQuery, useApolloClient, useSubscription } from '@apollo/client'
+
+export const updateCache = (cache, query, addedBook) => {
+  // helper that is used to eliminate saving same person twice
+  const uniqByTitle = (a) => {
+    let seen = new Set()
+    return a.filter((item) => {
+      let k = item.title
+      return seen.has(k) ? false : seen.add(k)
+    })
+  }
+
+  cache.updateQuery(query, ({ allBooks}) => {
+    return {
+      allBooks: uniqByTitle(allBooks.concat(addedBook))
+    }
+  })
+}
 
 const App = () => {
   const [token, setToken] = useState(null)
@@ -16,9 +33,11 @@ const App = () => {
 
   const client = useApolloClient()
 
-  const result = useQuery(ALL_BOOKS_AND_AUTHORS, {
-    pollInterval: 2000
+  const authors = useQuery(ALL_AUTHORS, {
+    //pollInterval: 2000
   })
+
+  const books = useQuery(ALL_BOOKS)
 
   const {data, refetch} = useQuery(GETCURRENTUSER, {
     fetchPolicy: 'no-cache'
@@ -28,7 +47,8 @@ const App = () => {
     onData: ({ data }) => {
       console.log(data)
       const addedBook = data.data.bookAdded
-      window.alert(`A new book ${addedBook.title} was added! `)
+      //window.alert(`A new book ${addedBook.title} was added! `)
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
     }
   })
 
@@ -46,7 +66,7 @@ const App = () => {
     } 
   }, [page])
   
-  if (result.loading) {
+  if (authors.loading) {
     return <div>loading...</div>
   }
 
@@ -95,12 +115,12 @@ const App = () => {
         }
       </div>
 
-      <Authors show={page === 'authors'} authors={result.data.allAuthors} setError={setErrorMessage} token={token}/>
+      <Authors show={page === 'authors'} authors={authors.data.allAuthors} setError={setErrorMessage} token={token}/>
       <Books 
         show={page === 'books' || page === 'recommendations'} 
         recommended = {page === 'recommendations'}
         currentUser = {user}
-        books= {page === 'recommendations' ? null : result.data.allBooks}
+        books= {page === 'recommendations' ? null : books.data.allBooks}
         setGenre={setGenre} 
         genre={genre}
         showByGenre={showByGenre}
