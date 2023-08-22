@@ -3,9 +3,8 @@ import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
-import { ALL_BOOKS_AND_AUTHORS, GETCURRENTUSER } from './queries'
-
-import { useQuery, useApolloClient } from '@apollo/client'
+import { ALL_BOOKS_AND_AUTHORS, GETCURRENTUSER, BOOK_ADDED } from './queries'
+import { useQuery, useApolloClient, useSubscription } from '@apollo/client'
 
 const App = () => {
   const [token, setToken] = useState(null)
@@ -24,6 +23,15 @@ const App = () => {
   const {data, refetch} = useQuery(GETCURRENTUSER, {
     fetchPolicy: 'no-cache'
   })
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      console.log(data)
+      const addedBook = data.data.bookAdded
+      window.alert(`A new book ${addedBook.title} was added! `)
+    }
+  })
+
   useEffect(() => {
     if ( data !== undefined && data.me !== null ) {
       setUser(data.me)
