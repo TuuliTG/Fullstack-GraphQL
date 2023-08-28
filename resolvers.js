@@ -37,10 +37,7 @@ const resolvers = {
   Author: {
     name: (root) => root.name,
     id: (root) => root.id,
-    bookCount: async (root) => {
-      const books = await Book.find({}).populate('author')
-      return books.filter(b => b.author.name === root.name).length
-    },
+    bookCount: (root) => root.books.length,
     born: (root) => root.born
   },
   Mutation: {
@@ -56,7 +53,7 @@ const resolvers = {
       let author = await Author.findOne({ name: args.author })
       if (!author) {
         try {
-          author = new Author({ name: args.author })
+          author = new Author({ name: args.author, books: [args.title] })
           await author.save()
         } catch (error) {
           throw new GraphQLError('Saving a new author failed', {
@@ -67,7 +64,12 @@ const resolvers = {
             }
           })
         }
+      } else {
+        const update = { books: author.books.concat(args.title) } 
+        const filter = { name: author.name }
+        await Author.findOneAndUpdate(filter, update)
       }
+
       let book
       try {
         book = new Book({ ...args, author: author })

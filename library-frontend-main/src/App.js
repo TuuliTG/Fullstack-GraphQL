@@ -34,18 +34,15 @@ const App = () => {
   const client = useApolloClient()
 
   const authors = useQuery(ALL_AUTHORS, {
-    //pollInterval: 2000
+    pollInterval: 2000
   })
-
   const books = useQuery(ALL_BOOKS)
-
   const {data, refetch} = useQuery(GETCURRENTUSER, {
     fetchPolicy: 'no-cache'
   })
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
-      console.log(data)
       const addedBook = data.data.bookAdded
       //window.alert(`A new book ${addedBook.title} was added! `)
       updateCache(client.cache, { query: ALL_BOOKS }, addedBook)
@@ -66,7 +63,7 @@ const App = () => {
     } 
   }, [page])
   
-  if (authors.loading) {
+  if (authors.loading || books.loading) {
     return <div>loading...</div>
   }
 
@@ -115,7 +112,7 @@ const App = () => {
         }
       </div>
 
-      <Authors show={page === 'authors'} authors={authors.data.allAuthors} setError={setErrorMessage} token={token}/>
+      <Authors show={page === 'authors'} authors={authors.data.allAuthors} setError={setErrorMessage} user={user}/>
       <Books 
         show={page === 'books' || page === 'recommendations'} 
         recommended = {page === 'recommendations'}

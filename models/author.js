@@ -12,6 +12,11 @@ const schema = new mongoose.Schema({
   born: {
     type: Number,
   },
+  books: [
+    {
+      type: String
+    }
+  ]
 })
 
 schema.plugin(uniqueValidator)
